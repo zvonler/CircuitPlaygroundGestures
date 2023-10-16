@@ -20,6 +20,7 @@
 #ifndef circuit_playground_gestures_h
 #define circuit_playground_gestures_h
 
+#include <Adafruit_CircuitPlayground.h>
 #include <DebouncedButton.h>
 
 #include "DebouncedSwitch.h"
@@ -165,17 +166,23 @@ private:
     CircuitPlaygroundGestures(CircuitPlaygroundGestures const&) = delete;
 
     void accelerometer_interrupt();
-    void slide_switch_changed();
-    void left_button_changed();
-    void right_button_changed();
+    void slide_switch_interrupt();
+    void left_button_interrupt();
+    void right_button_interrupt();
 
-    volatile bool _slide_switch_reading = false;
-    volatile bool _left_button_reading = false;
-    volatile bool _right_button_reading = false;
-    volatile bool _accelerometer_interrupted = false;
+    volatile bool _slide_switch_interrupted = false;
+    bool _slide_switch_reading = false;
     DebouncedSwitch _slide_switch;
+
+    volatile bool _left_button_interrupted = false;
+    bool _left_button_reading = false;
     DebouncedButton _left_button;
+
+    volatile bool _right_button_interrupted = false;
+    bool _right_button_reading = false;
     DebouncedButton _right_button;
+
+    volatile bool _accelerometer_interrupted = false;
     uint32_t _tap_ignore_start_tm = 0;
     uint32_t _shake_reset_start_tm = 0;
     Orientation _orientation = UNKNOWN_ORIENTATION;

@@ -58,17 +58,17 @@ struct CPGAccessor
 
     static void slide_switch_ISR()
     {
-        CircuitPlaygroundGestures::instance().slide_switch_changed();
+        CircuitPlaygroundGestures::instance().slide_switch_interrupt();
     }
 
     static void left_button_ISR()
     {
-        CircuitPlaygroundGestures::instance().left_button_changed();
+        CircuitPlaygroundGestures::instance().left_button_interrupt();
     }
 
     static void right_button_ISR()
     {
-        CircuitPlaygroundGestures::instance().right_button_changed();
+        CircuitPlaygroundGestures::instance().right_button_interrupt();
     }
 };
 
@@ -166,6 +166,10 @@ CircuitPlaygroundGestures::update(uint32_t tm)
         _tap_ignore_start_tm = tm;
     }
 
+    if (_slide_switch_interrupted) {
+        _slide_switch_reading = digitalRead(CPLAY_SLIDESWITCHPIN);
+        _slide_switch_interrupted = false;
+    }
     auto switch_input = _slide_switch.update(_slide_switch_reading, tm);
     if (switch_input != DebouncedSwitch::NONE) {
         // Prevent reacting to taps that are really switch moves.
@@ -173,7 +177,16 @@ CircuitPlaygroundGestures::update(uint32_t tm)
         return switch_input == DebouncedSwitch::SWITCHED_ON ? SLIDE_SWITCHED_ON : SLIDE_SWITCHED_OFF;
     }
 
+    if (_left_button_interrupted) {
+        _left_button_reading = digitalRead(CPLAY_LEFTBUTTON);
+        _left_button_interrupted = false;
+    }
     auto left_input = _left_button.update(_left_button_reading, tm);
+
+    if (_right_button_interrupted) {
+        _right_button_reading = digitalRead(CPLAY_RIGHTBUTTON);
+        _right_button_interrupted = false;
+    }
     auto right_input = _right_button.update(_right_button_reading, tm);
 
     if (left_input == DebouncedButton::NONE && right_input == DebouncedButton::NONE)
@@ -270,21 +283,21 @@ CircuitPlaygroundGestures::accelerometer_interrupt()
 }
 
 void
-CircuitPlaygroundGestures::slide_switch_changed()
+CircuitPlaygroundGestures::slide_switch_interrupt()
 {
-    _slide_switch_reading = digitalRead(CPLAY_SLIDESWITCHPIN);
+    _slide_switch_interrupted = true;
 }
 
 void
-CircuitPlaygroundGestures::left_button_changed()
+CircuitPlaygroundGestures::left_button_interrupt()
 {
-    _left_button_reading = digitalRead(CPLAY_LEFTBUTTON);
+    _left_button_interrupted = true;
 }
 
 void
-CircuitPlaygroundGestures::right_button_changed()
+CircuitPlaygroundGestures::right_button_interrupt()
 {
-    _right_button_reading = digitalRead(CPLAY_RIGHTBUTTON);
+    _right_button_interrupted = true;
 }
 
 /*---------------------------------------------------------------------------*/
