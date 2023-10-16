@@ -61,7 +61,7 @@ public:
      * The recognized orientations of the Circuit Playground.
      */
     enum Orientation {
-        UNKNOWN,
+        UNKNOWN_ORIENTATION,
         Z_UP,
         Z_DOWN,
         Y_UP,
@@ -178,7 +178,7 @@ private:
     DebouncedButton _right_button;
     uint32_t _tap_ignore_start_tm = 0;
     uint32_t _shake_reset_start_tm = 0;
-    Orientation _orientation = UNKNOWN;
+    Orientation _orientation = UNKNOWN_ORIENTATION;
 
     struct {
         float x = 0;
@@ -204,7 +204,7 @@ private:
         if (int1_src & 0x04) return Y_DOWN;
         if (int1_src & 0x02) return X_UP;
         if (int1_src & 0x01) return X_DOWN;
-        return UNKNOWN;
+        return UNKNOWN_ORIENTATION;
     }
 };
 
